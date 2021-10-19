@@ -1,0 +1,13 @@
+{
+  "miniprogramRoot": "./",
+  "projectname": "guessNumber",
+  "description": "guess number",
+  "appid": "wxe954cb2c29be1722",
+  "setting": {
+    "urlCheck": true,
+    "es6": false,
+    "postcss": false,
+    "minified": false
+  },
+  "compileType": "miniprogram"
+}
