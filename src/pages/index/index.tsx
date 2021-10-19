@@ -1,46 +1,117 @@
-import { useCallback } from "react";
-import { View, Text, Button, Image } from "@tarojs/components";
+import { useCallback, useEffect, useState } from "react";
+import { View, Text, ScrollView } from "@tarojs/components";
 import { useEnv, useNavigationBar, useModal, useToast } from "taro-hooks";
-import logo from "./hook.png";
+import { AtButton, AtCard } from "taro-ui";
+import Taro, { stopPullDownRefresh, usePullDownRefresh } from "@tarojs/taro";
+import "./index.scss";
+import { ILottery, ILotteryResponse } from "./type";
 
-import './index.scss'
+const data: {
+  time?: string;
+  myNumber: number[];
+  winningNumber?: number[];
+}[] = [
+  {
+    time: "2021",
+    myNumber: [12, 23, 43, 2, 4, 2]
+  },
+  {
+    time: "2021",
+    myNumber: [12, 23, 43, 2, 4, 2],
+    winningNumber: [12, 23, 43, 2, 4, 2]
+  },
+  {
+    time: "2021",
+    myNumber: [12, 23, 43, 2, 4, 2],
+    winningNumber: [12, 23, 43, 2, 4, 2]
+  },
+  {
+    time: "2021",
+    myNumber: [12, 23, 43, 2, 4, 2],
+    winningNumber: [12, 23, 43, 2, 4, 2]
+  },
+  {
+    time: "2021",
+    myNumber: [12, 23, 43, 2, 4, 2],
+    winningNumber: [12, 23, 43, 2, 4, 2]
+  },
+  {
+    time: "2021",
+    myNumber: [12, 23, 43, 2, 4, 2],
+    winningNumber: [12, 23, 43, 2, 4, 2]
+  },
+  {
+    time: "2021",
+    myNumber: [12, 23, 43, 2, 4, 2],
+    winningNumber: [12, 23, 43, 2, 4, 2]
+  },
+  {
+    time: "2021",
+    myNumber: [12, 23, 43, 2, 4, 2],
+    winningNumber: [12, 23, 43, 2, 4, 2]
+  },
+  {
+    time: "2021",
+    myNumber: [12, 23, 43, 2, 4, 2],
+    winningNumber: [12, 23, 43, 2, 4, 2]
+  }
+];
 
 const Index = () => {
-  const env = useEnv();
-  const [_, { setTitle }] = useNavigationBar({ title: "Taro Hooks" });
-  const [show] = useModal({
-    title: "Taro Hooks!",
-    showCancel: false,
-    confirmColor: "#8c2de9",
-    confirmText: "支持一下",
-    mask: true,
-  });
-  const [showToast] = useToast({ mask: true });
+  const [list, setList] = useState<ILottery[]>();
 
-  const handleModal = useCallback(() => {
-    show({ content: "不如给一个star⭐️!" }).then(() => {
-      showToast({ title: "点击了支持!" });
+  useEffect(() => {
+    onGetWinNumList();
+  }, []);
+
+  usePullDownRefresh(() => {
+    onGetWinNumList();
+    stopPullDownRefresh();
+  });
+
+  const onGetWinNumList = () => {
+    Taro.request({
+      url:
+        "https://webapi.sporttery.cn/gateway/lottery/getHistoryPageListV1.qry?gameNo=85&provinceId=0&pageSize=30&isVerify=1&pageNo=1", //仅为示例，并非真实的接口地址
+      success: function(res) {
+        console.log(res.data);
+        const data = res.data as ILotteryResponse;
+        if (data.success) {
+          setList(data.value.list);
+        }
+      }
     });
-  }, [show, showToast]);
+  };
 
   return (
     <View className="wrapper">
-      <Image className="logo" src={logo} />
-      <Text className="title">为Taro而设计的Hooks Library</Text>
-      <Text className="desc">
-        目前覆盖70%官方API. 抹平部分API在H5端短板. 提供近30+Hooks!
-        并结合ahook适配Taro!
-      </Text>
-      <View className="list">
-        <Text className="label">运行环境</Text>
-        <Text className="note">{env}</Text>
+      <View className="btn">
+        <AtButton type="primary">Select</AtButton>
       </View>
-      <Button className="button" onClick={() => setTitle("Taro Hooks Nice!")}>
-        设置标题
-      </Button>
-      <Button className="button" onClick={handleModal}>
-        使用Modal
-      </Button>
+      <ScrollView>
+        {list?.map(item => {
+          return (
+            <AtCard
+              extra={item.lotteryDrawTime}
+              title={item.lotteryDrawNum}
+              note={item?.lotteryDrawResult}
+            >
+              {/* <View>
+                <Text>已选：</Text>
+                {item.myNumber.map(item => {
+                  return <Text>{item} </Text>;
+                })}
+              </View> */}
+              {/* <View>
+                <Text>WN：</Text>
+                {item?.lotteryDrawResult.split('\n')?.map(item => {
+                  return <Text>{item} </Text>;
+                })}
+              </View> */}
+            </AtCard>
+          );
+        })}
+      </ScrollView>
     </View>
   );
 };
