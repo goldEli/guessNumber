@@ -60,14 +60,14 @@ const data: {
 const Index = () => {
   const [list, setList] = useState<ILottery[]>();
 
-  useEffect(() => {
-    onGetWinNumList();
-  }, []);
+  // useEffect(() => {
+  //   onGetWinNumList();
+  // }, []);
 
-  usePullDownRefresh(() => {
-    onGetWinNumList();
-    stopPullDownRefresh();
-  });
+  // usePullDownRefresh(() => {
+  //   onGetWinNumList();
+  //   stopPullDownRefresh();
+  // });
 
   const onGetWinNumList = () => {
     Taro.request({
@@ -85,7 +85,8 @@ const Index = () => {
 
   return (
     <View className="wrapper">
-      <View className="btn">
+      <View className="btn-box">
+        <AtButton onClick={onGetWinNumList} type="secondary">Refresh</AtButton>
         <AtButton type="primary">Select</AtButton>
       </View>
       <ScrollView>
